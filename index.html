@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>303 Forge — AI Agents as a Service · Dubai</title>
+<style>
+:root{
+  --bg:#0A0A0A;--s1:#111;--s2:#1A1A1A;--s3:#222;
+  --teal:#06D6CF;--teal2:#4DE8E3;
+  --td:rgba(6,214,207,0.08);--tb:rgba(6,214,207,0.2);--tb2:rgba(6,214,207,0.25);
+  --text:#fff;--text2:rgba(255,255,255,0.8);--text3:rgba(255,255,255,0.4);
+  --border:rgba(6,214,207,0.15);--border2:rgba(6,214,207,0.25);
+  --gf:linear-gradient(135deg,#06D6CF,#4DE8E3);
+  --ff:ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);overflow-x:hidden;cursor:none}
+#cur{position:fixed;width:10px;height:10px;background:var(--teal);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s}
+#ring{position:fixed;width:36px;height:36px;border:1px solid rgba(6,214,207,0.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%)}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(6,214,207,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(6,214,207,.015) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 56px;display:flex;justify-content:space-between;align-items:center;transition:background .3s}
+nav.scrolled{background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:var(--ff);font-size:18px;font-weight:800;display:flex;align-items:center;gap:5px;text-decoration:none}
+.logo-n{background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-s{color:var(--text3);-webkit-text-fill-color:var(--text3)}
+.logo-w{color:var(--text2);-webkit-text-fill-color:var(--text2);font-weight:600}
+nav ul{display:flex;gap:36px;list-style:none}
+nav a{color:var(--text2);text-decoration:none;font-size:11px;letter-spacing:.14em;text-transform:uppercase;transition:color .2s}
+nav a:hover{color:var(--text)}
+.nav-cta{background:var(--td);border:1px solid var(--tb);color:var(--teal2)!important;padding:8px 20px;cursor:pointer;transition:all .2s}
+.nav-cta:hover{background:var(--teal);color:#000!important}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 56px 80px;position:relative;overflow:hidden;z-index:1}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 18s ease-in-out infinite}
+.orb1{width:600px;height:600px;background:rgba(6,214,207,0.05);top:-150px;right:-100px}
+.orb2{width:450px;height:450px;background:rgba(6,214,207,0.04);bottom:-80px;left:-120px;animation-delay:-7s}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(24px,-18px)}}
+.eyebrow{font-size:11px;letter-spacing:.22em;color:var(--teal);text-transform:uppercase;margin-bottom:28px;display:flex;align-items:center;gap:12px;opacity:0;animation:rise .8s .1s ease forwards}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--teal)}
+.pdot{width:7px;height:7px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite;margin-left:4px;display:inline-block}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(6,214,207,0.5)}50%{box-shadow:0 0 0 6px rgba(6,214,207,0)}}
+h1.hh{font-size:clamp(40px,5vw,60px);font-weight:700;line-height:1.0;letter-spacing:-.02em;max-width:860px;opacity:0;animation:rise .9s .2s ease forwards;color:#fff}
+h1.hh .hl{background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+h1.hh .dim{color:rgba(255,255,255,0.6);font-weight:600;display:block}
+.hsub{margin-top:24px;font-size:20px;color:var(--text2);max-width:500px;line-height:1.75;opacity:0;animation:rise .9s .32s ease forwards}
+.apill{margin-top:30px;display:inline-flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--border2);padding:10px 18px;opacity:0;animation:rise .9s .44s ease forwards}
+.apill .lbl{font-size:9px;letter-spacing:.2em;color:var(--text3);text-transform:uppercase}
+.apill .val{font-size:13px;font-weight:700;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hctas{margin-top:44px;display:flex;gap:16px;align-items:center;opacity:0;animation:rise .9s .54s ease forwards}
+.btn{background:var(--teal);color:#000;padding:14px 32px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .25s;cursor:pointer;border:none;display:inline-block}
+.btn:hover{background:var(--teal2);transform:translateY(-2px)}
+.ghost{color:var(--text2);font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;gap:7px;transition:color .2s;background:none;border:none;cursor:pointer}
+.ghost:hover{color:var(--teal2)}
+.ticker{margin-top:60px;display:flex;gap:40px;align-items:center;opacity:0;animation:rise .9s .68s ease forwards;flex-wrap:wrap}
+.tk{display:flex;flex-direction:column;gap:4px}
+.tkv{font-size:34px;font-weight:800;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.tkl{font-size:9px;color:var(--text3);letter-spacing:.16em;text-transform:uppercase}
+.tkd{width:1px;height:36px;background:var(--border)}
+.hcard{position:absolute;right:56px;top:50%;transform:translateY(-50%);width:296px;opacity:0;animation:rise .9s .5s ease forwards}
+.ac{background:var(--s1);border:1px solid var(--border2);padding:22px;position:relative;overflow:hidden}
+.ac::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--gf)}
+.ac-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.ac-t{font-size:9px;color:var(--text3);letter-spacing:.16em;text-transform:uppercase}
+.ac-l{font-size:9px;color:var(--teal);display:flex;align-items:center;gap:5px}
+.ac-l::before{content:"";width:5px;height:5px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite}
+.ar{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.ar:last-of-type{border:none}
+.arn{font-size:12px}
+.ars{font-size:8px;letter-spacing:.1em;padding:2px 8px;border-radius:20px}
+.run{background:rgba(6,214,207,0.1);color:var(--teal);border:1px solid rgba(6,214,207,0.2)}
+.que{background:rgba(6,214,207,0.05);color:var(--teal2);border:1px solid rgba(6,214,207,0.12)}
+.acf{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-around}
+.acfn{font-size:18px;font-weight:800;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;text-align:center}
+.acfl{font-size:7px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-top:3px;text-align:center}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* SHARED */
+section{padding:110px 56px;position:relative;z-index:1}
+.stag{font-size:10px;letter-spacing:.22em;color:var(--teal);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.stag::before{content:"";width:24px;height:1px;background:var(--teal)}
+.sh{font-size:clamp(24px,3.5vw,36px);font-weight:700;line-height:1.1;letter-spacing:-.01em;margin-bottom:12px;color:#fff}
+.sh em{font-style:italic;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ss{color:var(--text2);font-size:18px;max-width:520px;line-height:1.75;margin-bottom:64px}
+hr.div{border:none;height:1px;background:var(--border);margin:0 56px}
+.fi{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease}
+.js-on .fi{opacity:0;transform:translateY(16px)}
+.fi.vis{opacity:1;transform:translateY(0)}
+
+/* AaaS CARDS */
+.s-aaas{background:var(--s1)}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.ac2{background:var(--s2);padding:34px 30px;border:1px solid transparent;transition:all .2s;position:relative;overflow:hidden}
+.ac2::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--gf);opacity:0;transition:opacity .2s}
+.ac2:hover{background:var(--s3);border-color:var(--border2)}
+.ac2:hover::before{opacity:1}
+.ac2n{font-size:52px;font-weight:800;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:.14;line-height:1;margin-bottom:14px}
+.ac2 h3{font-size:17px;font-weight:700;margin-bottom:9px;color:var(--teal)}
+.ac2 p{font-size:13px;color:var(--text2);line-height:1.7}
+
+/* VS */
+.vs-hero{display:grid;grid-template-columns:1fr 80px 1fr;align-items:stretch;border:1px solid var(--border)}
+.vsc{padding:48px 40px}
+.old-c{background:var(--s1);border-right:1px solid var(--border)}
+.new-c{background:var(--s2)}
+.vsh{margin-bottom:28px}
+.vsbadge{font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:4px 12px;display:inline-block;margin-bottom:12px}
+.bad{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.1)}
+.good{background:rgba(6,214,207,0.1);color:var(--teal);border:1px solid rgba(6,214,207,0.25)}
+.vsc h3{font-size:22px;font-weight:700;margin:0}
+.old-c h3{color:rgba(255,255,255,0.3)!important}
+.new-c h3{color:var(--teal)}
+.vis-items{display:flex;flex-direction:column;gap:14px}
+.vsdiv{display:flex;align-items:center;justify-content:center;background:var(--bg);border-left:1px solid var(--border);border-right:1px solid var(--border)}
+.vsball{width:52px;height:52px;border-radius:50%;background:var(--gf);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#000}
+.vi{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--text2);line-height:1.5}
+.vi::before{content:"";width:16px;height:16px;border-radius:50%;flex-shrink:0;margin-top:1px;background-size:10px;background-repeat:no-repeat;background-position:center}
+.vi.g::before{background-color:rgba(6,214,207,0.15);border:1px solid rgba(6,214,207,0.4);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolyline points='2,6 5,9 10,3' fill='none' stroke='%2306D6CF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.vi.b::before{background-color:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cline x1='3' y1='3' x2='9' y2='9' stroke='rgba(255,255,255,0.3)' stroke-width='1.8' stroke-linecap='round'/%3E%3Cline x1='9' y1='3' x2='3' y2='9' stroke='rgba(255,255,255,0.3)' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E")}
+
+/* HOW IT WORKS */
+.srow{display:grid;grid-template-columns:repeat(5,1fr);position:relative}
+.srow::before{content:"";position:absolute;top:32px;left:10%;right:10%;height:1px;background:linear-gradient(to right,transparent,var(--border2),var(--border2),transparent)}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 10px}
+.stepc{width:64px;height:64px;border-radius:50%;border:1px solid var(--border2);background:var(--s1);display:flex;align-items:center;justify-content:center;margin-bottom:18px;z-index:1;transition:all .3s}
+.stepc:hover{border-color:var(--tb);box-shadow:0 0 20px var(--td)}
+.stepn{font-size:18px;font-weight:800;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stept{font-size:13px;font-weight:700;margin-bottom:7px;color:var(--teal)}
+.stepd{font-size:11.5px;color:var(--text2);line-height:1.6}
+
+/* PLANS */
+.s-plans{background:var(--s1)}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.plan{background:var(--s2);padding:34px 26px;border:1px solid transparent;position:relative;overflow:hidden;transition:border-color .2s}
+.plan.feat{border-color:var(--tb)}
+.plan.feat::before{content:"MOST POPULAR";position:absolute;top:0;left:26px;background:var(--teal);color:#000;font-size:8px;font-weight:700;letter-spacing:.2em;padding:3px 10px}
+.ptl{position:absolute;top:0;left:0;right:0;height:1px;background:var(--gf);opacity:0;transition:opacity .2s}
+.plan:hover .ptl{opacity:1}
+.ptier{font-size:9px;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;margin-top:12px}
+.pname{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:5px}
+.ptag{font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.pdiv{height:1px;background:var(--border);margin-bottom:18px}
+.plbl{font-size:8px;color:var(--text3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.psetup{font-size:24px;font-weight:800;line-height:1;margin-bottom:2px}
+.psetup small{font-size:12px;font-weight:300;color:var(--text2)}
+.pmo{font-size:11px;color:var(--text3);margin-bottom:18px}
+.pagents{display:inline-flex;align-items:center;gap:7px;background:var(--s3);padding:5px 11px;margin-bottom:18px;border:1px solid var(--tb)}
+.pagents strong{font-size:14px;font-weight:800;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pagents em{font-size:8px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;font-style:normal}
+.plist{list-style:none;margin-bottom:24px;display:flex;flex-direction:column;gap:8px}
+.plist li{font-size:12px;color:var(--text2);display:flex;gap:8px;align-items:flex-start;line-height:1.45}
+.plist li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--text3);margin-top:5px;flex-shrink:0}
+.pbtn{display:block;text-align:center;padding:12px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .2s;border:1px solid;cursor:pointer;background:transparent;font-family:var(--ff);width:100%}
+
+/* BEFORE/AFTER */
+.s-ba{background:var(--s1)}
+.bag{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.bac{background:var(--s2);padding:28px 24px;border:1px solid transparent;transition:border-color .2s;position:relative;overflow:hidden}
+.bac:hover{border-color:var(--border2)}
+.bac::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--gf);opacity:0;transition:opacity .2s}
+.bac:hover::before{opacity:1}
+.balbl{font-size:9px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;margin-bottom:18px}
+.barow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.batype{font-size:11px;color:var(--text3);width:80px}
+.baval{font-size:18px;font-weight:800;line-height:1}
+.baval.old{color:var(--text3);text-decoration:line-through;font-size:16px}
+.baval.new{background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.basave{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--teal)}
+
+/* INDUSTRIES */
+.s-ind{background:var(--s1)}
+.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.ind{padding:34px 26px;background:var(--s2);border:1px solid transparent;transition:all .2s}
+.ind:hover{border-color:var(--border2);background:var(--s3)}
+.indicon{font-size:28px;margin-bottom:14px;line-height:1}
+.ind h3{font-size:16px;font-weight:700;margin-bottom:9px;color:var(--teal)}
+.ind p{font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:16px}
+.itags{display:flex;flex-wrap:wrap;gap:5px}
+.it{font-size:8px;padding:3px 8px;border-radius:20px;letter-spacing:.08em;background:rgba(6,214,207,0.08);color:var(--teal2);border:1px solid rgba(6,214,207,0.18)}
+
+/* USE CASES */
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.case{background:var(--s1);padding:30px 26px;border:1px solid transparent;transition:all .2s}
+.case:hover{background:var(--s2);border-color:var(--border2)}
+.ctag{font-size:8px;letter-spacing:.16em;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:14px;display:inline-block;background:rgba(6,214,207,0.1);color:var(--teal);border:1px solid rgba(6,214,207,0.25)}
+.case h3{font-size:16px;font-weight:700;margin-bottom:9px;color:var(--teal)}
+.case p{font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:16px}
+.cbens{display:flex;flex-direction:column;gap:6px;padding-top:14px;border-top:1px solid var(--border)}
+.cben{font-size:12px;color:var(--text2);display:flex;gap:7px;align-items:flex-start;line-height:1.45}
+.cben::before{content:"";color:var(--teal);flex-shrink:0}
+
+/* SELF-IMPROVING */
+.impi{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.impv{background:var(--s1);border:1px solid var(--border2);padding:26px;position:relative}
+.impv::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--gf)}
+.ivh{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.ivt{font-size:9px;color:var(--text3);letter-spacing:.14em;text-transform:uppercase}
+.ivl{font-size:9px;color:var(--teal)}
+.ivlog{display:flex;flex-direction:column}
+.ivr{display:flex;gap:10px;font-size:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+.ivr:last-child{border:none}
+.ivtime{color:var(--text3);flex-shrink:0;width:40px}
+.ivauto{color:var(--teal)}.ivpend{color:var(--teal2)}.ivscan{color:rgba(6,214,207,0.6)}
+.impr h2{margin-bottom:12px}
+.impr > p{color:var(--text2);font-size:14px;line-height:1.75;margin-bottom:24px}
+.ipl{display:flex;flex-direction:column;gap:16px}
+.ip{display:flex;gap:12px;align-items:flex-start}
+.ipdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ip h4{font-size:13px;font-weight:500;margin-bottom:3px;color:rgba(255,255,255,0.5)}
+.ip p{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* GET STARTED */
+.s-start{background:var(--s1)}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.ss2{background:var(--s2);padding:26px 22px;border:1px solid transparent;transition:border-color .2s}
+.ss2:hover{border-color:var(--border2)}
+.ss2n{font-size:40px;font-weight:800;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:.22;line-height:1;margin-bottom:10px}
+.ss2 h3{font-size:14px;font-weight:700;margin-bottom:7px;color:var(--teal)}
+.ss2 p{font-size:12px;color:var(--text2);line-height:1.65}
+.sbadge{margin-top:12px;font-size:9px;letter-spacing:.14em;padding:3px 10px;display:inline-block;background:rgba(6,214,207,0.08);color:var(--teal2);border:1px solid rgba(6,214,207,0.18)}
+
+/* FAQ */
+.s-faq{background:var(--bg)}
+.fqi{display:grid;grid-template-columns:1fr 1.8fr;gap:80px;align-items:start}
+.fql p{color:var(--text2);font-size:14px;line-height:1.75;margin-top:12px}
+.fqlist{display:flex;flex-direction:column;gap:2px}
+.fqitem{background:var(--s2);border:1px solid var(--border);overflow:hidden;transition:border-color .2s}
+.fqitem.open{border-color:var(--border2)}
+.fqq{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;cursor:pointer;font-size:14px;font-weight:500;color:#fff;user-select:none;gap:16px}
+.fqq:hover{color:var(--teal2)}
+.fqico{font-size:18px;color:var(--text3);flex-shrink:0;transition:transform .2s;line-height:1}
+.fqitem.open .fqico{transform:rotate(45deg);color:var(--teal)}
+.fqa{display:none;padding:0 22px 18px;font-size:13px;color:var(--text2);line-height:1.75}
+.fqitem.open .fqa{display:block}
+
+/* CTA */
+.s-cta{text-align:center;position:relative;overflow:hidden;padding:140px 56px}
+.ctabg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(6,214,207,0.06) 0%,transparent 70%);pointer-events:none}
+.s-cta h2{font-size:clamp(28px,4vw,52px);font-weight:700;letter-spacing:-.02em;line-height:1.05;position:relative;margin-bottom:18px;color:#fff}
+.s-cta h2 em{font-style:normal;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.s-cta p{color:var(--text2);font-size:16px;max-width:460px;margin:0 auto 44px;line-height:1.75;position:relative}
+.cacts{display:flex;justify-content:center;gap:16px;position:relative}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:38px 56px;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+.flogo{font-size:16px;font-weight:800}
+.fcopy{font-size:10px;color:var(--text3);letter-spacing:.1em}
+.flinks{display:flex;gap:22px}
+.flinks a{font-size:10px;color:var(--text3);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
+.flinks a:hover{color:var(--teal2)}
+
+/* MODAL */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.moverlay.open{opacity:1;pointer-events:all}
+.mbox{background:#111;border:1px solid rgba(6,214,207,0.25);padding:48px 44px;width:100%;max-width:480px;position:relative;transform:translateY(20px);transition:transform .3s ease}
+.moverlay.open .mbox{transform:translateY(0)}
+.mbox::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--gf)}
+.mclose{position:absolute;top:16px;right:20px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:24px;cursor:pointer;line-height:1;padding:4px 8px;transition:color .2s}
+.mclose:hover{color:#fff}
+.mtag{font-size:9px;letter-spacing:.22em;color:var(--teal);text-transform:uppercase;margin-bottom:14px}
+.mh{font-size:24px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.2}
+.msub{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:32px;line-height:1.6}
+.fg{margin-bottom:18px}
+.fg label{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:7px}
+.fg input{width:100%;background:#1A1A1A;border:1px solid rgba(6,214,207,0.15);padding:13px 16px;color:#fff;font-size:14px;font-family:var(--ff);outline:none;transition:border-color .2s}
+.fg input::placeholder{color:rgba(255,255,255,0.25)}
+.fg input:focus{border-color:rgba(6,214,207,0.5)}
+.fsubmit{width:100%;background:var(--teal);color:#000;border:none;padding:15px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:8px;font-family:var(--ff)}
+.fsubmit:hover{background:var(--teal2);transform:translateY(-1px)}
+.fsubmit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.fnote{font-size:11px;color:rgba(255,255,255,0.3);text-align:center;margin-top:14px;line-height:1.5}
+.fsuccess{display:none;text-align:center;padding:20px 0}
+.fsuccess .sico{font-size:48px;margin-bottom:16px;color:var(--teal)}
+.fsuccess h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:8px}
+.fsuccess p{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6}
+
+@media(max-width:900px){
+  nav{padding:16px 20px}
+  nav ul,.hcard{display:none}
+  section{padding:80px 24px}
+  hr.div{margin:0 24px}
+  .hero{padding:100px 24px 80px}
+  h1.hh{font-size:42px}
+  .ag,.pg,.ig,.srow,.sg,.bag,.cg{grid-template-columns:1fr}
+  .impi,.fqi{grid-template-columns:1fr;gap:36px}
+  .vs-hero{grid-template-columns:1fr}
+  .vsdiv{padding:20px;border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .old-c{border-right:none;border-bottom:1px solid var(--border)}
+  footer{flex-direction:column;gap:18px;padding:30px 24px;text-align:center}
+  .mbox{padding:32px 24px;margin:16px}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="ring"></div>
+
+<nav id="nav">
+  <a href="#home" class="logo"><span class="logo-n">303</span><span class="logo-s">/</span><span class="logo-w">Forge</span></a>
+  <ul>
+    <li><a href="#what">What is AaaS</a></li>
+    <li><a href="#why">Why 303 Forge</a></li>
+    <li><a href="#plans">Plans</a></li>
+    <li><a href="#industries">Industries</a></li>
+    <li><a href="#improve">Self-Improving</a></li>
+  </ul>
+  <button class="nav-cta" onclick="openModal()">Deploy Agents &rarr;</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="eyebrow">AI Agents as a Service &middot; Dubai <span class="pdot"></span></div>
+  <h1 class="hh">Your business,<br><span class="hl">staffed by AI.</span><span class="dim">Subscribed. Not built.</span></h1>
+  <p class="hsub">303 Forge deploys specialist AI agents into your business as a monthly subscription. No dev team. No months of setup. Agents working inside 3 weeks.</p>
+  <div class="apill"><span class="lbl">Model</span><span style="color:var(--text3)">&mdash;</span><span class="val">AI Agents as a Service (AaaS)</span><span style="color:var(--text3)">&mdash;</span><span class="lbl">Dubai &middot; UAE &middot; GCC</span></div>
+  <div class="hctas">
+    <button class="btn" onclick="openModal()">Book a call with the team</button>
+    <a href="#what" class="ghost">How AaaS works &rarr;</a>
+  </div>
+  <div class="ticker">
+    <div class="tk"><div class="tkv">44+</div><div class="tkl">Active agents</div></div>
+    <div class="tkd"></div>
+    <div class="tk"><div class="tkv">3wk</div><div class="tkl">Time to live</div></div>
+    <div class="tkd"></div>
+    <div class="tk"><div class="tkv">24/7</div><div class="tkl">Autonomous ops</div></div>
+    <div class="tkd"></div>
+    <div class="tk"><div class="tkv">AED 0</div><div class="tkl">Dev team needed</div></div>
+  </div>
+  <div class="hcard">
+    <div class="ac">
+      <div class="ac-h"><div class="ac-t">Agent Status &middot; Live</div><div class="ac-l">Running</div></div>
+      <div class="ar"><span class="arn">AI Receptionist</span><span class="ars run">Running</span></div>
+      <div class="ar"><span class="arn">Lead Qualifier</span><span class="ars run">Running</span></div>
+      <div class="ar"><span class="arn">Content Strategist</span><span class="ars run">Running</span></div>
+      <div class="ar"><span class="arn">Operations Agent</span><span class="ars que">Queued</span></div>
+      <div class="ar"><span class="arn">Report Writer</span><span class="ars run">Running</span></div>
+      <div class="ar"><span class="arn">WhatsApp Agent</span><span class="ars run">Running</span></div>
+      <div class="acf">
+        <div><div class="acfn">312</div><div class="acfl">Tasks today</div></div>
+        <div><div class="acfn">41h</div><div class="acfl">Saved/wk</div></div>
+        <div><div class="acfn">99%</div><div class="acfl">Uptime</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- WHAT IS AaaS -->
+<section class="s-aaas" id="what">
+  <div class="stag fi">What is AaaS</div>
+  <h2 class="sh fi">Not software. Not a project.<br><em>A team subscription.</em></h2>
+  <p class="ss fi">AI Agents as a Service means you subscribe to a dedicated team of AI specialists &mdash; the way you subscribe to Salesforce, but instead of a CRM, you get agents that actually do the work.</p>
+  <div class="ag fi">
+    <div class="ac2"><div class="ac2n">01</div><h3>Agents, not tools</h3><p>A tool waits for you to use it. An agent works autonomously &mdash; reading inputs, making decisions, executing tasks, and reporting back. The difference is whether your business runs without you or not.</p></div>
+    <div class="ac2"><div class="ac2n">02</div><h3>Subscribed, not built</h3><p>Traditional AI projects take 6&ndash;12 months and cost AED 200K+. With AaaS, your agents are live in 3 weeks for a fraction of the cost &mdash; and they improve every month automatically.</p></div>
+    <div class="ac2"><div class="ac2n">03</div><h3>Specialists, not generalists</h3><p>Every agent is a deep specialist. A lead qualifier only qualifies and routes leads. A report writer only generates performance reports. Depth over breadth &mdash; every time.</p></div>
+    <div class="ac2"><div class="ac2n">04</div><h3>Self-improving by design</h3><p>Every month, your agents get smarter. Agent Lab &mdash; our meta-agent &mdash; scrapes AI research daily, reads your configs, and upgrades them automatically. Your stack evolves while you sleep.</p></div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- VS -->
+<section id="why">
+  <div class="stag fi">Why 303 Forge</div>
+  <h2 class="sh fi">The old way is <em>broken.</em></h2>
+  <p class="ss fi">Traditional AI projects are slow, expensive, and fragile. AaaS flips the model entirely &mdash; you subscribe to a team of agents the way you subscribe to software.</p>
+  <div class="vs-hero fi">
+    <div class="vsc old-c">
+      <div class="vsh"><div class="vsbadge bad">The old way</div><h3>Traditional AI build</h3></div>
+      <div class="vis-items">
+        <div class="vi b">6&ndash;12 month build timeline before anything works</div>
+        <div class="vi b">AED 150K&ndash;400K upfront development cost</div>
+        <div class="vi b">Breaks silently when AI models update</div>
+        <div class="vi b">Static &mdash; never improves itself</div>
+        <div class="vi b">Requires an internal tech team to maintain</div>
+        <div class="vi b">One fragile monolithic system</div>
+        <div class="vi b">You own the problem when it fails</div>
+      </div>
+    </div>
+    <div class="vsdiv"><div class="vsball">VS</div></div>
+    <div class="vsc new-c">
+      <div class="vsh"><div class="vsbadge good">303 Forge AaaS</div><h3>AI Agents as a Service</h3></div>
+      <div class="vis-items">
+        <div class="vi g">Live in 3 weeks &mdash; guaranteed</div>
+        <div class="vi g">Monthly subscription, zero capex</div>
+        <div class="vi g">Agent Lab updates your stack nightly</div>
+        <div class="vi g">Self-improving &mdash; gets smarter every month</div>
+        <div class="vi g">Zero internal tech team required</div>
+        <div class="vi g">Modular specialists you can add or swap</div>
+        <div class="vi g">We own the performance &mdash; that is the deal</div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- HOW IT WORKS -->
+<section id="agents">
+  <div class="stag fi">How it works</div>
+  <h2 class="sh fi">From brief to <em>autonomous</em> in 5 steps.</h2>
+  <p class="ss fi">We handle everything. You approve the agents. They run.</p>
+  <div class="srow fi">
+    <div class="step"><div class="stepc"><div class="stepn">1</div></div><div class="stept">Free Audit</div><div class="stepd">We map your business and identify the highest-leverage automation opportunities</div></div>
+    <div class="step"><div class="stepc"><div class="stepn">2</div></div><div class="stept">Agent Design</div><div class="stepd">We design a custom agent stack around your exact workflows and team structure</div></div>
+    <div class="step"><div class="stepc"><div class="stepn">3</div></div><div class="stept">Build &amp; Test</div><div class="stepd">Your agents are built, tested, and trained on your specific business context</div></div>
+    <div class="step"><div class="stepc"><div class="stepn">4</div></div><div class="stept">Go Live</div><div class="stepd">Agents deploy to your channels. Staff briefed in a single 2-hour session</div></div>
+    <div class="step"><div class="stepc"><div class="stepn">5</div></div><div class="stept">Auto-Improve</div><div class="stepd">Agent Lab upgrades your stack every month. You approve or auto-apply</div></div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- PLANS -->
+<section class="s-plans" id="plans">
+  <div class="stag fi">Subscription plans</div>
+  <h2 class="sh fi">Pick your <em>agent team.</em></h2>
+  <p class="ss fi">All plans include setup, deployment, staff training, and ongoing agent improvement. No hidden fees. No per-user charges.</p>
+  <div class="pg fi">
+    <div class="plan"><div class="ptl"></div><div class="ptier">Tier 01</div><div class="pname" style="background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Ignite</div><div class="ptag">2&ndash;3 specialist agents. Test AI automation in one department without the risk.</div><div class="pdiv"></div><div class="plbl">Setup fee</div><div class="psetup" style="background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AED 8,000 <small>one-time</small></div><div class="pmo">+ AED 2,500 / month</div><div class="pagents"><strong>2&ndash;3</strong><em>agents deployed</em></div><ul class="plist"><li>AI Receptionist or Lead Qualifier</li><li>Workflow automation for one department</li><li>WhatsApp + email integration</li><li>Monthly performance report</li><li>Monthly Agent Lab upgrade cycle</li></ul><button class="pbtn" onclick="openModal()" style="border-color:var(--tb);color:var(--teal2)">Get started</button></div>
+    <div class="plan feat"><div class="ptl"></div><div class="ptier" style="margin-top:20px">Tier 02</div><div class="pname" style="background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Accelerate</div><div class="ptag">Full department automation. Multiple agent specialists working in coordination.</div><div class="pdiv"></div><div class="plbl">Setup fee</div><div class="psetup" style="background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AED 18,000 <small>one-time</small></div><div class="pmo">+ AED 5,500 / month</div><div class="pagents"><strong>6&ndash;8</strong><em>agents deployed</em></div><ul class="plist"><li>Everything in Ignite, plus:</li><li>AI Receptionist + full intake workflow</li><li>Operations automation agent</li><li>Document generation &amp; processing agent</li><li>Daily KPI report, auto-generated</li><li>Agent Lab &mdash; self-improving monthly</li><li>Bi-weekly strategy reviews with the team</li></ul><button class="pbtn" onclick="openModal()" style="background:var(--teal);border-color:var(--teal);color:#000">Get started</button></div>
+    <div class="plan"><div class="ptl"></div><div class="ptier">Tier 03</div><div class="pname" style="background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Dominance</div><div class="ptag">Full company transformation. Every department, every process, every channel &mdash; automated.</div><div class="pdiv"></div><div class="plbl">Setup fee</div><div class="psetup" style="background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AED 35,000+ <small>one-time</small></div><div class="pmo">+ AED 10,000 / month</div><div class="pagents"><strong>16&ndash;24</strong><em>agents deployed</em></div><ul class="plist"><li>Everything in Accelerate, plus:</li><li>All departments automated end-to-end</li><li>Arabic-first agent configuration</li><li>Custom reporting dashboard</li><li>Direct WhatsApp line to the team</li><li>Quarterly strategy sessions</li><li>Unlimited agent expansions</li></ul><button class="pbtn" onclick="openModal()" style="border-color:var(--tb);color:var(--teal2)">Get started</button></div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- BEFORE/AFTER -->
+<section class="s-ba" id="results">
+  <div class="stag fi">The numbers</div>
+  <h2 class="sh fi">What changes when <em>agents run.</em></h2>
+  <p class="ss fi">Real comparisons across businesses we have deployed agents into.</p>
+  <div class="bag fi">
+    <div class="bac"><div class="balbl">Client onboarding</div><div class="barow"><span class="batype">Manual</span><span class="baval old">8+ hrs</span></div><div class="barow"><span class="batype">With agents</span><span class="baval new">1 hr</span></div><div class="basave">&darr; 87% time reduction</div></div>
+    <div class="bac"><div class="balbl">Task delivery &amp; fulfilment</div><div class="barow"><span class="batype">Manual</span><span class="baval old">12 hrs</span></div><div class="barow"><span class="batype">With agents</span><span class="baval new">2 hrs</span></div><div class="basave">&darr; 83% faster turnaround</div></div>
+    <div class="bac"><div class="balbl">Pre-approval processing</div><div class="barow"><span class="batype">Manual</span><span class="baval old">3&ndash;4 hrs</span></div><div class="barow"><span class="batype">With agents</span><span class="baval new">20 min</span></div><div class="basave">&darr; 90% processing time saved</div></div>
+    <div class="bac"><div class="balbl">Front desk / intake capacity</div><div class="barow"><span class="batype">Manual</span><span class="baval old">~40/day</span></div><div class="barow"><span class="batype">With agents</span><span class="baval new">400+/day</span></div><div class="basave">&uarr; 10x throughput, same team</div></div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- INDUSTRIES -->
+<section class="s-ind" id="industries">
+  <div class="stag fi">Industries</div>
+  <h2 class="sh fi">Built for <em>Dubai&rsquo;s</em> growth sectors.</h2>
+  <p class="ss fi">Purpose-built agent stacks for the GCC market, trained on UAE-specific context &mdash; regulations, language, and culture.</p>
+  <div class="ig fi">
+    <div class="ind"><div class="indicon">&#127973;</div><h3>Healthcare &amp; Clinics</h3><p>AI Receptionist handling calls and WhatsApp 24/7, insurance pre-approval automation, patient journey tracking, documentation agents, and compliance checking for DHA, DAMAN, and Thiqa.</p><div class="itags"><span class="it">AI Receptionist</span><span class="it">Insurance Agent</span><span class="it">Patient Journey</span></div></div>
+    <div class="ind"><div class="indicon">&#127970;</div><h3>Real Estate</h3><p>Lead qualification agents that respond to every inquiry in minutes, automated WhatsApp follow-up sequences, viewing scheduler, CRM updater, and monthly pipeline reports.</p><div class="itags"><span class="it">Lead Qualifier</span><span class="it">Follow-Up Agent</span><span class="it">Pipeline Report</span></div></div>
+    <div class="ind"><div class="indicon">&#127869;</div><h3>F&amp;B &amp; Hospitality</h3><p>Content calendar agent, social media scheduler, review response agent, reservation automation via WhatsApp, staff scheduling, and weekly revenue reporting.</p><div class="itags"><span class="it">Content Agent</span><span class="it">Review Agent</span><span class="it">Reservation Bot</span></div></div>
+    <div class="ind"><div class="indicon">&#128717;</div><h3>Retail &amp; E-Commerce</h3><p>Abandoned cart recovery agent, customer re-engagement automation, personalised promotion agent, product description writer, and weekly sales performance dashboard.</p><div class="itags"><span class="it">Recovery Agent</span><span class="it">Promo Agent</span><span class="it">Sales Reporter</span></div></div>
+    <div class="ind"><div class="indicon">&#9881;</div><h3>Construction &amp; PMC</h3><p>Tender parsing, cost estimation, contract review, schedule optimisation, RFI management, HSE compliance checking, and automated progress reporting for UAE projects.</p><div class="itags"><span class="it">Tender Parser</span><span class="it">Cost Estimator</span><span class="it">HSE Agent</span></div></div>
+    <div class="ind"><div class="indicon">&#128200;</div><h3>Marketing Agencies</h3><p>Creative briefs to deliverables pipeline, client reporting automation, paid ads optimisation agents, content production at scale, and multi-brand campaign management.</p><div class="itags"><span class="it">Campaign Agent</span><span class="it">Report Writer</span><span class="it">Content Engine</span></div></div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- USE CASES -->
+<section id="cases">
+  <div class="stag fi">What we build</div>
+  <h2 class="sh fi">Agents built for <em>real workflows.</em></h2>
+  <p class="ss fi">Not demos. Not generic chatbots. Agents trained on your specific business, integrated into your channels, deployed to handle real work.</p>
+  <div class="cg fi">
+    <div class="case"><span class="ctag">Reception</span><h3>AI Receptionist &mdash; Phone &amp; WhatsApp</h3><p>Answers inbound calls and messages 24/7 in English and Arabic. Books, reschedules, and cancels without human input.</p><div class="cbens"><div class="cben">90% of inquiries handled with zero staff</div><div class="cben">Response under 60 seconds vs 3&ndash;5 min hold</div><div class="cben">Bilingual English/Arabic, all channels unified</div><div class="cben">Every interaction logged to CRM in real time</div></div></div>
+    <div class="case"><span class="ctag">Sales</span><h3>Lead Qualification &amp; Follow-Up Agent</h3><p>Responds to every inquiry within minutes via WhatsApp. Qualifies, collects requirements, and books next steps before a human gets involved.</p><div class="cbens"><div class="cben">Response in under 3 min vs industry avg of 4 hrs</div><div class="cben">Qualified leads delivered with full context</div><div class="cben">Automated follow-up &mdash; day 1, 3, 7, 14</div><div class="cben">CRM updated automatically after every interaction</div></div></div>
+    <div class="case"><span class="ctag">Operations</span><h3>Daily KPI &amp; Operations Report</h3><p>Every morning your team gets a full briefing: activity, performance by department, anomalies flagged, and recommendations. Fully automated.</p><div class="cbens"><div class="cben">Zero manual data compilation &mdash; ever</div><div class="cben">Anomalies and underperformance flagged instantly</div><div class="cben">Delivered via WhatsApp, email, or dashboard</div><div class="cben">Customised per department and decision-maker</div></div></div>
+    <div class="case"><span class="ctag">Marketing</span><h3>Content Engine &mdash; Briefs to Deliverables</h3><p>Brief goes in. Strategy, copy, social calendar, and performance recommendations come out. A swarm of specialists working in sequence.</p><div class="cbens"><div class="cben">5x content output with the same team size</div><div class="cben">Brand voice trained per client &mdash; not generic AI</div><div class="cben">Arabic and English, GCC-native context</div><div class="cben">Full QA chain &mdash; brand, copy, legal, compliance</div></div></div>
+    <div class="case"><span class="ctag">Documents</span><h3>Document Processing &amp; Generation Agent</h3><p>Reads any document, extracts key data, drafts responses or contracts, and files everything automatically. Works with PDFs, emails, and forms.</p><div class="cbens"><div class="cben">Documents processed in minutes not hours</div><div class="cben">Consistent, accurate formatting every time</div><div class="cben">Connects to your storage and CRM automatically</div><div class="cben">Full audit trail for every document action</div></div></div>
+    <div class="case"><span class="ctag">Analytics</span><h3>Performance Analyser &amp; Insight Agent</h3><p>Aggregates data across all platforms, identifies patterns, flags what is and is not working, and sends a weekly insight report to leadership.</p><div class="cbens"><div class="cben">Connects all platforms into one view</div><div class="cben">Identifies high-performing patterns automatically</div><div class="cben">Actionable recommendations, not just data dumps</div><div class="cben">Saves 5&ndash;10 hours of manual reporting per week</div></div></div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- SELF-IMPROVING -->
+<section id="improve">
+  <div class="impi">
+    <div class="impv fi">
+      <div class="ivh"><div class="ivt">Agent Lab &middot; Nightly Run &middot; 11:00 PM GST</div><div class="ivl">&#9679; Live</div></div>
+      <div class="ivlog">
+        <div class="ivr"><span class="ivtime">23:01</span><span class="ivscan">Scanning 6 AI research sources...</span></div>
+        <div class="ivr"><span class="ivtime">23:03</span><span class="ivscan">Found 14 findings. Scoring relevance...</span></div>
+        <div class="ivr"><span class="ivtime">23:04</span><span class="ivscan">Reading 24 agent configurations...</span></div>
+        <div class="ivr"><span class="ivtime">23:06</span><span class="ivauto">&#10003; AUTO-APPLIED: Updated trigger phrases (+3)</span></div>
+        <div class="ivr"><span class="ivtime">23:06</span><span class="ivauto">&#10003; AUTO-APPLIED: Fixed error pattern in ops agent</span></div>
+        <div class="ivr"><span class="ivtime">23:07</span><span class="ivpend">&#8987; PENDING: Add Arabic-first mode to WhatsApp agent</span></div>
+        <div class="ivr"><span class="ivtime">23:07</span><span class="ivpend">&#8987; PENDING: Split content agent into 2 specialists</span></div>
+        <div class="ivr"><span class="ivtime">23:08</span><span class="ivscan">WhatsApp summary sent to the team &#10003;</span></div>
+        <div class="ivr"><span class="ivtime">23:08</span><span class="ivauto">Run complete. 2 auto-applied &middot; 2 pending approval.</span></div>
+      </div>
+    </div>
+    <div class="impr">
+      <div class="stag fi">The AaaS difference</div>
+      <h2 class="sh fi">Your agents get <em>smarter</em> every night.</h2>
+      <p class="fi">Every 303 Forge subscription includes Agent Lab &mdash; a meta-agent that reads AI research daily and upgrades your agents automatically. The feature no other AI agency in the region offers.</p>
+      <div class="ipl fi">
+        <div class="ip"><div class="ipdot" style="background:var(--teal)"></div><div><h4>Auto-applied fixes</h4><p>Small improvements go live automatically overnight. Zero effort from you.</p></div></div>
+        <div class="ip"><div class="ipdot" style="background:var(--teal2)"></div><div><h4>Approval queue for bigger changes</h4><p>Structural upgrades wait in a WhatsApp queue for your approval. You stay in control.</p></div></div>
+        <div class="ip"><div class="ipdot" style="background:rgba(6,214,207,0.4)"></div><div><h4>Evidence-based, never arbitrary</h4><p>Every recommendation traces to a specific research finding. Nothing changes without a documented reason.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- GET STARTED -->
+<section class="s-start" id="start">
+  <div class="stag fi">Get started</div>
+  <h2 class="sh fi">From audit to <em>autonomous</em> in 4 steps.</h2>
+  <p class="ss fi">No long procurement. No dev team. No technical knowledge required on your side.</p>
+  <div class="sg fi">
+    <div class="ss2"><div class="ss2n">01</div><h3>Free 30-min audit</h3><p>We map your operations and identify the 3 highest-leverage automation opportunities.</p><span class="sbadge">Free &middot; No commitment</span></div>
+    <div class="ss2"><div class="ss2n">02</div><h3>Agent architecture</h3><p>We design your custom agent stack &mdash; which specialists you need, how they coordinate, which channels they cover.</p><span class="sbadge">Week 1</span></div>
+    <div class="ss2"><div class="ss2n">03</div><h3>Build &amp; deploy</h3><p>Your agents are built, tested against real scenarios, integrated with your channels, and deployed live.</p><span class="sbadge">Week 2&ndash;3</span></div>
+    <div class="ss2"><div class="ss2n">04</div><h3>Subscribe &amp; scale</h3><p>You are live. Monthly subscription covers ongoing improvements, new agents, performance reviews, and direct support.</p><span class="sbadge">Month 1 onwards</span></div>
+  </div>
+</section>
+<hr class="div">
+
+<!-- FAQ -->
+<section class="s-faq" id="faq">
+  <div class="fqi">
+    <div class="fql">
+      <div class="stag fi">FAQ</div>
+      <h2 class="sh fi">Questions we <em>always get.</em></h2>
+      <p class="fi">If something is not answered here, reach out directly. The team responds same day.</p>
+    </div>
+    <div class="fqlist fi">
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">What exactly is Agents-as-a-Service?<span class="fqico">+</span></div><div class="fqa">AaaS means you subscribe to a team of AI specialist agents monthly &mdash; no large upfront build cost. Each agent is custom-built for your business, deployed to your channels, and improves automatically over time.</div></div>
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">How long does it take to go live?<span class="fqico">+</span></div><div class="fqa">3 weeks from signed agreement to live agents. Week 1 is discovery and design. Week 2 is build and testing. Week 3 is deployment and staff training.</div></div>
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">Do we need to change our existing tools?<span class="fqico">+</span></div><div class="fqa">No. We integrate with what you already use &mdash; WhatsApp Business, your calendar, CRM, email, project management tools, and databases. We do not replace your stack. We connect agents to it.</div></div>
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">Do we need a technical team or IT department?<span class="fqico">+</span></div><div class="fqa">No. We handle everything &mdash; design, integration, testing, deployment, and maintenance. Your staff attend a 2-hour training session when we go live. No technical knowledge required.</div></div>
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">What does "self-improving" actually mean?<span class="fqico">+</span></div><div class="fqa">Every night, Agent Lab scrapes 6 AI research sources, reads all your agent configurations, and generates improvement recommendations. Small fixes are applied automatically. Bigger changes are sent to you via WhatsApp for approval. Your agents in month 6 are materially smarter than on day one.</div></div>
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">What happens if an agent makes a mistake?<span class="fqico">+</span></div><div class="fqa">Every agent has a human escalation path. When something falls outside its confidence threshold, it flags the case to your team with full context. All interactions are logged and auditable.</div></div>
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">What is the ROI? When does it pay for itself?<span class="fqico">+</span></div><div class="fqa">Most businesses recover the cost within the first 2&ndash;3 weeks through staff time savings alone &mdash; typically 15&ndash;25 hours per week. A single team member doing repetitive admin costs AED 8,000&ndash;15,000/month. The agents handle that work for a fraction of the cost.</div></div>
+      <div class="fqitem"><div class="fqq" onclick="toggleFaq(this)">Is there a minimum contract length?<span class="fqico">+</span></div><div class="fqa">We start with a 3-month pilot. After that, you move to month-to-month. No lock-ins beyond the initial pilot.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="s-cta" id="contact">
+  <div class="ctabg"></div>
+  <div class="stag fi" style="justify-content:center;margin-bottom:22px">Ready to deploy</div>
+  <h2 class="fi">Your AI team is<br><em>ready to go.</em></h2>
+  <p class="fi">Book a free 30-minute audit. We will show you exactly which agents would save the most time in your business &mdash; live demo, your scenario, no slides.</p>
+  <div class="cacts fi">
+    <button class="btn" onclick="openModal()">Book a call with the team</button>
+  </div>
+</section>
+
+<footer>
+  <div class="flogo"><span style="background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">303</span> <span style="color:var(--text2)">Forge</span></div>
+  <div class="fcopy">&copy; 2026 Three Zero Three Holdings &middot; Dubai, UAE &middot; AI Agents as a Service</div>
+  <div class="flinks"><a href="#what">AaaS</a><a href="#plans">Plans</a><a href="#industries">Industries</a><a href="#contact">Contact</a></div>
+</footer>
+
+<!-- BOOKING MODAL -->
+<div class="moverlay" id="modal" onclick="bgClose(event)">
+  <div class="mbox">
+    <button class="mclose" onclick="closeModal()">&times;</button>
+    <div class="mtag">Free &middot; No commitment</div>
+    <h2 class="mh">Book your free audit</h2>
+    <p class="msub">We will map your operations and show you exactly which agents save the most time &mdash; live demo, your scenario, 30 minutes.</p>
+    <form id="aform" action="https://formspree.io/f/xgopwnoj" method="POST">
+      <input type="hidden" name="_subject" value="New audit request - 303 Forge">
+      <div class="fg"><label for="fn">Full name</label><input type="text" id="fn" name="name" placeholder="Your full name" required autocomplete="name"></div>
+      <div class="fg"><label for="fe">Email address</label><input type="email" id="fe" name="email" placeholder="your@email.com" required autocomplete="email"></div>
+      <div class="fg"><label for="fm">Mobile / WhatsApp</label><input type="tel" id="fm" name="mobile" placeholder="+971 XX XXX XXXX" required autocomplete="tel"></div>
+      <div class="fg"><label for="fb">Company &amp; industry</label><input type="text" id="fb" name="business" placeholder="Company name and industry" required></div>
+      <button type="submit" class="fsubmit" id="fsub">Request free audit &rarr;</button>
+      <p class="fnote">Our team will reach out within 24 hours to confirm your slot.</p>
+    </form>
+    <div class="fsuccess" id="fsuc">
+      <div class="sico">&#10003;</div>
+      <h3>Request received.</h3>
+      <p>The team will be in touch within 24 hours.<br>Check your WhatsApp and email.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Cursor
+var cur=document.getElementById("cur"),ring=document.getElementById("ring");
+var mx=0,my=0,rx=0,ry=0;
+document.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;cur.style.left=mx+"px";cur.style.top=my+"px"});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(loop)})();
+document.querySelectorAll("a,button,.plan,.ind,.ss2,.ac2").forEach(function(el){
+  el.addEventListener("mouseenter",function(){cur.style.width="16px";cur.style.height="16px"});
+  el.addEventListener("mouseleave",function(){cur.style.width="10px";cur.style.height="10px"});
+});
+
+// Nav scroll
+window.addEventListener("scroll",function(){document.getElementById("nav").classList.toggle("scrolled",scrollY>60)});
+
+// Scroll animations
+document.body.classList.add("js-on");
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e,i){
+    if(e.isIntersecting){setTimeout(function(){e.target.classList.add("vis")},i*70);obs.unobserve(e.target)}
+  });
+},{threshold:.06,rootMargin:"0px 0px -20px 0px"});
+document.querySelectorAll(".fi").forEach(function(el){obs.observe(el)});
+
+// FAQ
+function toggleFaq(el){
+  var item=el.parentElement;
+  var isOpen=item.classList.contains("open");
+  document.querySelectorAll(".fqitem").forEach(function(i){i.classList.remove("open")});
+  if(!isOpen)item.classList.add("open");
+}
+
+// Modal
+function openModal(){document.getElementById("modal").classList.add("open");document.body.style.overflow="hidden"}
+function closeModal(){document.getElementById("modal").classList.remove("open");document.body.style.overflow=""}
+function bgClose(e){if(e.target===document.getElementById("modal"))closeModal()}
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
+
+// Form submit
+document.getElementById("aform").addEventListener("submit",function(e){
+  e.preventDefault();
+  var btn=document.getElementById("fsub");
+  btn.disabled=true;
+  btn.textContent="Sending...";
+  fetch(this.action,{method:"POST",body:new FormData(this),headers:{"Accept":"application/json"}})
+    .then(function(r){
+      if(r.ok){
+        document.getElementById("aform").style.display="none";
+        document.getElementById("fsuc").style.display="block";
+      } else {
+        btn.disabled=false;btn.textContent="Something went wrong. Try again.";
+      }
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent="Check your connection and try again.";
+    });
+});
+</script>
+</body>
+</html>
