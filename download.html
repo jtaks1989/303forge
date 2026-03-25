@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Playbook is Ready — 303 Forge</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0A0A;--s1:#111;--s2:#1A1A1A;--teal:#06D6CF;--teal2:#4DE8E3;--text:#F0F0F0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.35);--border:rgba(6,214,207,0.15);--ff:ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}
+html,body{height:100%;background:var(--bg);font-family:var(--ff);color:var(--text)}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;overflow:hidden}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(6,214,207,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(6,214,207,.015) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none}
+.orb1{width:500px;height:500px;background:rgba(6,214,207,0.05);top:-150px;right:-100px}
+.orb2{width:400px;height:400px;background:rgba(6,214,207,0.04);bottom:-100px;left:-100px}
+
+.card{background:var(--s1);border:1px solid var(--border);padding:52px 48px;max-width:520px;width:100%;position:relative;z-index:1;animation:rise .6s ease forwards}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(135deg,#06D6CF,#4DE8E3)}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.check{width:56px;height:56px;border-radius:50%;background:rgba(6,214,207,0.12);border:1px solid rgba(6,214,207,0.3);display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+.check svg{width:24px;height:24px;stroke:#06D6CF;stroke-width:2.5;fill:none}
+
+.tag{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.tag::before{content:"";width:20px;height:1px;background:var(--teal)}
+
+h1{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:10px;color:#fff}
+h1 em{font-style:normal;background:linear-gradient(135deg,#06D6CF,#4DE8E3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.sub{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:32px}
+
+.btn-download{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--teal);color:#000;padding:16px 28px;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;transition:all .25s;margin-bottom:12px;border:none;cursor:pointer}
+.btn-download:hover{background:var(--teal2);transform:translateY(-1px)}
+.btn-download svg{width:18px;height:18px;flex-shrink:0}
+
+.btn-note{font-size:11px;color:var(--text3);text-align:center;margin-bottom:32px}
+
+.divider{height:1px;background:var(--border);margin-bottom:24px}
+
+.next-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.ns-item{display:flex;gap:12px;align-items:flex-start}
+.ns-num{width:22px;height:22px;border-radius:50%;background:rgba(6,214,207,0.1);border:1px solid rgba(6,214,207,0.25);color:var(--teal);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ns-text{font-size:13px;color:var(--text2);line-height:1.55}
+.ns-text strong{color:var(--text);font-weight:600}
+
+.contact-row{background:var(--s2);border:1px solid var(--border);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.contact-label{font-size:11px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.contact-val{font-size:13px;color:var(--teal);font-weight:500}
+
+.logo{position:fixed;top:24px;left:24px;font-size:15px;font-weight:700;z-index:10}
+.logo span{background:linear-gradient(135deg,#06D6CF,#4DE8E3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo em{color:rgba(255,255,255,0.6);font-style:normal;font-weight:400}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="logo"><span>303</span> <em>Forge</em></div>
+
+<div class="card">
+  <div class="check">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+
+  <div class="tag">Payment confirmed</div>
+  <h1>Your playbook is<br><em>ready to download.</em></h1>
+  <p class="sub">Thank you for your purchase. Click below to download your PDF — it's yours to keep, reference, and act on immediately.</p>
+
+  <a href="/downloads/AI_Agents_Playbook.pdf" download class="btn-download">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download AI Agents Playbook — PDF
+  </a>
+  <p class="btn-note">If the download doesn't start, right-click and choose "Save link as"</p>
+
+  <div class="divider"></div>
+
+  <div class="next-steps">
+    <div class="ns-item">
+      <div class="ns-num">1</div>
+      <div class="ns-text"><strong>Start with Chapter 8</strong> — the 30-day roadmap. Read that first, then go back to the beginning.</div>
+    </div>
+    <div class="ns-item">
+      <div class="ns-num">2</div>
+      <div class="ns-text"><strong>Print the checklist</strong> on page 13. Tick every box this week. Your first agent can be live in 7 days.</div>
+    </div>
+    <div class="ns-item">
+      <div class="ns-num">3</div>
+      <div class="ns-text"><strong>Pick one repeatable task</strong> your team does every day. That's your first agent. Write the system prompt tonight.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="contact-row">
+    <div>
+      <div class="contact-label">Need help deploying?</div>
+      <div class="contact-val">hello@byremi.net</div>
+    </div>
+    <div>
+      <div class="contact-label">WhatsApp direct</div>
+      <div class="contact-val">+971 56 748 1702</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
